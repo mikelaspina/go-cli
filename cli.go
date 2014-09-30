@@ -19,11 +19,11 @@ type Runnable func(args []string) error
 
 // A Command represents an action that can be invoked or a help topic.
 type Command struct {
-	Run   Runnable     // non-nil for an invokable action, otherwise a topic
-	Usage string       // usage message
-	Short string       // short (single-line) help text
-	Long  string       // multi-line help text
-	Flags flag.FlagSet // command line flags
+	Run      Runnable     // non-nil for an invokable action, otherwise a topic
+	Usage    string       // usage message
+	Short    string       // short (single-line) help text
+	Synopsis string       // multi-line help text
+	Flags    flag.FlagSet // command line flags
 }
 
 // A CommandSet represents a set of named commands.

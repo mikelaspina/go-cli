@@ -12,7 +12,7 @@ import (
 	"reflect"
 )
 
-// Help prints the help message for the CommandSet to standard error.
+// Help prints the usage text for a command to standard error.
 // It panics if an error occurs.
 func (cs *CommandSet) Help(name string) {
 	buf := bytes.Buffer{}
@@ -22,9 +22,9 @@ func (cs *CommandSet) Help(name string) {
 		buf.WriteString("Arguments:\n")
 		columnizeFlags(&buf, &cmd.Flags)
 
-		if cmd.Long != "" {
+		if cmd.Synopsis != "" {
 			buf.WriteString("\n")
-			buf.WriteString(cmd.Long)
+			buf.WriteString(cmd.Synopsis)
 			buf.WriteString("\n")
 		}
 	} else {
