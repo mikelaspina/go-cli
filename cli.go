@@ -146,11 +146,12 @@ func (cs *CommandSet) unknownCommand(w io.Writer, name string) {
 	}
 }
 
-var defaultCommandSet = NewCommandSet("", "")
+// Default is the default command set.
+var Default = NewCommandSet("", "")
 
 // Register adds a named command and panics if cmd is nil.
 func Register(name string, cmd *Command) {
-	defaultCommandSet.Register(name, cmd)
+	Default.Register(name, cmd)
 }
 
 // Run parses the command-line flags from os.Args()[2:], and invokes the
@@ -165,11 +166,11 @@ func Run() error {
 		os.Exit(2)
 	}
 
-	return defaultCommandSet.Run(args[0], args[1:])
+	return Default.Run(args[0], args[1:])
 }
 
 // Usage prints the help message to standard error, and panics if an
 // error occurs.
 func Usage(name string) {
-	defaultCommandSet.Usage(name)
+	Default.Usage(name)
 }
