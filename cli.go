@@ -35,9 +35,11 @@ type CommandSet struct {
 }
 
 // NewCommandSet creates a new, empty command set.
-func NewCommandSet() *CommandSet {
+func NewCommandSet(name, desc string) *CommandSet {
 	return &CommandSet{
 		cmds: make(map[string]*Command),
+		Name: name,
+		Desc: desc,
 	}
 }
 
@@ -144,7 +146,7 @@ func (cs *CommandSet) unknownCommand(w io.Writer, name string) {
 	}
 }
 
-var defaultCommandSet = NewCommandSet()
+var defaultCommandSet = NewCommandSet("", "")
 
 // SetName sets the name of the command set.
 func SetName(s string) {
