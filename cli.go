@@ -148,16 +148,6 @@ func (cs *CommandSet) unknownCommand(w io.Writer, name string) {
 
 var defaultCommandSet = NewCommandSet("", "")
 
-// SetName sets the name of the command set.
-func SetName(s string) {
-	defaultCommandSet.Name = s
-}
-
-// SetDescription sets the CommandSet description text.
-func SetDescription(s string) {
-	defaultCommandSet.Desc = s
-}
-
 // Register adds a named command and panics if cmd is nil.
 func Register(name string, cmd *Command) {
 	defaultCommandSet.Register(name, cmd)
