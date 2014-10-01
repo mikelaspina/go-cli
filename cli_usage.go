@@ -10,24 +10,24 @@ import (
 	"reflect"
 )
 
-func (self *CommandSet) printUsage() {
-	eprintf("usage: %s <command> [arguments]\n\n", self.name())
+func (cs *CommandSet) printUsage() {
+	eprintf("usage: %s <command> [arguments]\n\n", cs.name())
 
-	if names := self.actions(); len(names) > 0 {
+	if names := cs.actions(); len(names) > 0 {
 		eprintln("Available commands:")
 		nameWidth := maxLen(names)
 		for _, name := range names {
-			eprintf("    %-*s   %s\n", nameWidth, name, self.cmds[name].Short)
+			eprintf("    %-*s   %s\n", nameWidth, name, cs.cmds[name].Short)
 		}
-		eprintf("\nUse '%s help <command>' for more information on a specific command.\n", self.name())
+		eprintf("\nUse '%s help <command>' for more information on a specific command.\n", cs.name())
 	}
 
 	eprintln()
 }
 
 // cmd.Usage(programName)
-func (self *CommandSet) printUsageCmd(cmd *Command) {
-	eprintf("usage: %s %s\n\n", self.name(), cmd.Usage)
+func (cs *CommandSet) printUsageCmd(cmd *Command) {
+	eprintf("usage: %s %s\n\n", cs.name(), cmd.Usage)
 	eprintf("Arguments:\n")
 	columnize(&cmd.Flags)
 	if cmd.Synopsis != "" {
@@ -39,9 +39,9 @@ func (self *CommandSet) printUsageCmd(cmd *Command) {
 // plus its default value, and one for the usage text. The columns are
 // printed to standard output with a left margin of 3 spaces.
 func columnize(flags *flag.FlagSet) {
-	rows := make([][]string, 0)
+	var rows [][2]string
 	flags.VisitAll(func(f *flag.Flag) {
-		rows = append(rows, []string{formatFlag(f), f.Usage})
+		rows = append(rows, [2]string{formatFlag(f), f.Usage})
 	})
 
 	flagWidth := 0

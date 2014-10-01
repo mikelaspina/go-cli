@@ -114,7 +114,7 @@ func (cs *CommandSet) name() string {
 // in the CommandSet.
 func (cs *CommandSet) actions() []string {
 	actionNames := make([]string, 0, len(cs.cmds))
-	for name, _ := range cs.cmds {
+	for name := range cs.cmds {
 		actionNames = append(actionNames, name)
 	}
 	sort.Strings(actionNames)
@@ -124,8 +124,8 @@ func (cs *CommandSet) actions() []string {
 // partialMatch returns an array containing the commands that start
 // with prefix in lexicographical order.
 func (cs *CommandSet) partialMatch(prefix string) []string {
-	names := make([]string, 0)
-	for name, _ := range cs.cmds {
+	var names []string
+	for name := range cs.cmds {
 		if strings.HasPrefix(name, prefix) {
 			names = append(names, name)
 		}
