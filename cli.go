@@ -52,7 +52,7 @@ func (cs *CommandSet) Register(name string, cmd *Command) {
 		fmt.Fprintf(os.Stderr, "warning: command %q already exits", name)
 	}
 	if cmd.Flags.Usage == nil {
-		cmd.Flags.Usage = func() { cs.Usage(name) }
+		cmd.Flags.Usage = func() { cs.PrintUsage(name) }
 	}
 	cs.cmds[name] = cmd
 }
@@ -87,9 +87,9 @@ func (cs *CommandSet) Run(name string, args []string) error {
 	return cmd.Run(cmd.Flags.Args())
 }
 
-// Usage prints the usage text for a command, or the available commands
-// if name is blank.
-func (cs *CommandSet) Usage(name string) {
+// PrintUsage prints the usage text for a command to standard error. If
+// no command is given, the list of available commands is printed instead.
+func (cs *CommandSet) PrintUsage(name string) {
   cs.Run("help", []string{name})
 }
 
@@ -157,20 +157,20 @@ func Register(name string, cmd *Command) {
 // Run parses the command-line flags from os.Args()[2:], and invokes the
 // subcommand named by os.Args()[1].
 func Run() error {
-	flag.Usage = func() { Usage("") }
+	flag.Usage = func() { PrintUsage("") }
 	flag.Parse()
 
 	args := flag.Args()
 	if len(args) < 1 {
-		Usage("")
+		PrintUsage("")
 		os.Exit(2)
 	}
 
 	return Default.Run(args[0], args[1:])
 }
 
-// Usage prints the help message to standard error, and panics if an
-// error occurs.
-func Usage(name string) {
-	Default.Usage(name)
+// PrintUsage prints the usage text for a command to standard error. If
+// no command is given, the list of available commands is printed instead.
+func PrintUsage(name string) {
+	Default.PrintUsage(name)
 }
