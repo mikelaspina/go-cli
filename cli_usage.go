@@ -10,7 +10,14 @@ import (
 	"reflect"
 )
 
-func (cs *CommandSet) printUsage() {
+// PrintUsage prints the usage text for a command to standard error. If
+// no command is given, the list of available commands is printed instead.
+func (cs *CommandSet) PrintUsage(name string) {
+	if cmd, ok := cs.cmds[name]; ok {
+		cs.printUsageCmd(cmd)
+		return
+	}
+
 	eprintf("usage: %s <command> [arguments]\n\n", cs.name())
 
 	if names := cs.actions(); len(names) > 0 {
@@ -23,6 +30,16 @@ func (cs *CommandSet) printUsage() {
 	}
 
 	eprintln()
+}
+
+func maxLen(ary []string) int {
+	max := 0
+	for _, s := range ary {
+		if len(s) > max {
+			max = len(s)
+		}
+	}
+	return max
 }
 
 // cmd.Usage(programName)

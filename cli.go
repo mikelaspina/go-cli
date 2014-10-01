@@ -61,19 +61,15 @@ func (cs *CommandSet) Register(name string, cmd *Command) {
 func (cs *CommandSet) Run(name string, args []string) error {
 	cmd, ok := cs.cmds[name]
 	if !ok {
-		if name == "help" {
-			if len(args) == 1 {
-				if cmd, ok := cs.cmds[args[0]]; ok {
-					cs.printUsageCmd(cmd)
-				} else {
-					cs.printUsage()
-				}
-			} else {
-				cs.printUsage()
-			}
-		} else {
+		switch {
+		case name != "help":
 			cs.unknownCommand(os.Stderr, name)
+		case len(args) == 1:
+			cs.PrintUsage(args[0])
+		default:
+			cs.PrintUsage("")
 		}
+
 		os.Exit(2)
 	}
 
@@ -85,22 +81,6 @@ func (cs *CommandSet) Run(name string, args []string) error {
 	}
 
 	return cmd.Run(cmd.Flags.Args())
-}
-
-// PrintUsage prints the usage text for a command to standard error. If
-// no command is given, the list of available commands is printed instead.
-func (cs *CommandSet) PrintUsage(name string) {
-  cs.Run("help", []string{name})
-}
-
-func maxLen(ary []string) int {
-	max := 0
-	for _, s := range ary {
-		if len(s) > max {
-			max = len(s)
-		}
-	}
-	return max
 }
 
 // name returns the program name as it should appear in a usage message.
