@@ -4,39 +4,41 @@
 package cli
 
 import (
-	"bytes"
 	"flag"
 	"fmt"
-	"io"
 	"os"
 	"reflect"
 )
 
-// Help prints the usage text for a command to standard error.
-// It panics if an error occurs.
-func (cs *CommandSet) Help(name string) {
-	buf := bytes.Buffer{}
-	if cmd, ok := cs.cmds[name]; ok {
-		fmt.Fprintf(&buf, "usage: %s %s\n\n", cs.name(), cmd.Usage)
+func (self *CommandSet) printUsage() {
+	eprintf("usage: %s <command> [arguments]\n\n", self.name())
 
-		buf.WriteString("Arguments:\n")
-		columnizeFlags(&buf, &cmd.Flags)
-
-		if cmd.Synopsis != "" {
-			buf.WriteString("\n")
-			buf.WriteString(cmd.Synopsis)
-			buf.WriteString("\n")
+	if names := self.actions(); len(names) > 0 {
+		eprintln("Available commands:")
+		nameWidth := maxLen(names)
+		for _, name := range names {
+			eprintf("    %-*s   %s\n", nameWidth, name, self.cmds[name].Short)
 		}
-	} else {
-		cs.unknownCommand(&buf, name)
+		eprintf("\nUse '%s help <command>' for more information on a specific command.\n", self.name())
 	}
 
-	if _, err := buf.WriteTo(os.Stderr); err != nil {
-		panic(err)
+	eprintln()
+}
+
+// cmd.Usage(programName)
+func (self *CommandSet) printUsageCmd(cmd *Command) {
+	eprintf("usage: %s %s\n\n", self.name(), cmd.Usage)
+	eprintf("Arguments:\n")
+	columnize(&cmd.Flags)
+	if cmd.Synopsis != "" {
+		eprintf("\n%s\n", cmd.Synopsis)
 	}
 }
 
-func columnizeFlags(w io.Writer, flags *flag.FlagSet) {
+// columnize aligns a set of flags into two columns. One for the flag
+// plus its default value, and one for the usage text. The columns are
+// printed to standard output with a left margin of 3 spaces.
+func columnize(flags *flag.FlagSet) {
 	rows := make([][]string, 0)
 	flags.VisitAll(func(f *flag.Flag) {
 		rows = append(rows, []string{formatFlag(f), f.Usage})
@@ -50,7 +52,7 @@ func columnizeFlags(w io.Writer, flags *flag.FlagSet) {
 	}
 
 	for _, row := range rows {
-		fmt.Fprintf(w, "   %-*s   %s\n", flagWidth, row[0], row[1])
+		eprintf("   %-*s   %s\n", flagWidth, row[0], row[1])
 	}
 }
 
@@ -73,4 +75,12 @@ func formatFlag(f *flag.Flag) string {
 func shouldQuoteValue(f *flag.Flag) bool {
 	typ := reflect.TypeOf(f.Value)
 	return typ.Kind() == reflect.Ptr && typ.Elem().Kind() == reflect.String
+}
+
+func eprintf(format string, a ...interface{}) (int, error) {
+	return fmt.Fprintf(os.Stderr, format, a...)
+}
+
+func eprintln(a ...interface{}) (int, error) {
+	return fmt.Fprintln(os.Stderr, a...)
 }

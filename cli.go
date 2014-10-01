@@ -6,7 +6,6 @@
 package cli
 
 import (
-	"bytes"
 	"flag"
 	"fmt"
 	"io"
@@ -51,7 +50,7 @@ func (cs *CommandSet) Register(name string, cmd *Command) {
 		fmt.Fprintf(os.Stderr, "warning: command %q already exits", name)
 	}
 	if cmd.Flags.Usage == nil {
-		cmd.Flags.Usage = func() { cs.Help(name) }
+		cmd.Flags.Usage = func() { cs.Usage(name) }
 	}
 	cs.cmds[name] = cmd
 }
@@ -62,9 +61,13 @@ func (cs *CommandSet) Run(name string, args []string) error {
 	if !ok {
 		if name == "help" {
 			if len(args) == 1 {
-				cs.Help(args[0])
+				if cmd, ok := cs.cmds[args[0]]; ok {
+					cs.printUsageCmd(cmd)
+				} else {
+					cs.printUsage()
+				}
 			} else {
-				cs.Usage()
+				cs.printUsage()
 			}
 		} else {
 			cs.unknownCommand(os.Stderr, name)
@@ -74,7 +77,7 @@ func (cs *CommandSet) Run(name string, args []string) error {
 
 	if err := cmd.Flags.Parse(args); err != nil {
 		if err != flag.ErrHelp {
-			fmt.Fprintf(os.Stderr, "%s: %v\n", err)
+			fmt.Fprintln(os.Stderr, err)
 		}
 		os.Exit(2)
 	}
@@ -82,29 +85,10 @@ func (cs *CommandSet) Run(name string, args []string) error {
 	return cmd.Run(cmd.Flags.Args())
 }
 
-// Usage prints the help message for the CommandSet to standard error,
-// and panics if an error occurs.
-func (cs *CommandSet) Usage() {
-	buf := bytes.Buffer{}
-	fmt.Fprintf(&buf, "usage: %s <command> [arguments]\n\n", cs.name())
-
-	if names := cs.actions(); len(names) > 0 {
-		fmt.Fprintln(&buf, "Available commands:")
-
-		nameWidth := maxLen(names)
-		for _, name := range names {
-			c := cs.cmds[name]
-			fmt.Fprintf(&buf, "    %-*s   %s\n", nameWidth, name, c.Short)
-		}
-
-		fmt.Fprintf(&buf, "\nUse '%s help <command>' for more information on a specific command.\n", cs.name())
-	}
-
-	fmt.Fprintln(&buf)
-
-	if _, err := buf.WriteTo(os.Stderr); err != nil {
-		panic(err)
-	}
+// Usage prints the usage text for a command, or the available commands
+// if name is blank.
+func (cs *CommandSet) Usage(name string) {
+  cs.Run("help", []string{name})
 }
 
 func maxLen(ary []string) int {
@@ -172,27 +156,28 @@ func SetDescription(s string) {
 	defaultCommandSet.Desc = s
 }
 
-// Register adds a named command. Register panics if c is nil.
-func Register(name string, c *Command) {
-	defaultCommandSet.Register(name, c)
+// Register adds a named command and panics if cmd is nil.
+func Register(name string, cmd *Command) {
+	defaultCommandSet.Register(name, cmd)
 }
 
-// Run invokes a named command.
+// Run parses the command-line flags from os.Args()[2:], and invokes the
+// subcommand named by os.Args()[1].
 func Run() error {
-	flag.Usage = Usage
+	flag.Usage = func() { Usage("") }
 	flag.Parse()
 
 	args := flag.Args()
 	if len(args) < 1 {
-		Usage()
+		Usage("")
 		os.Exit(2)
 	}
 
 	return defaultCommandSet.Run(args[0], args[1:])
 }
 
-// Usage prints the help message to standard error, and  panics if an
+// Usage prints the help message to standard error, and panics if an
 // error occurs.
-func Usage() {
-	defaultCommandSet.Usage()
+func Usage(name string) {
+	defaultCommandSet.Usage(name)
 }
