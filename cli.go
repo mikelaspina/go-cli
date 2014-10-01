@@ -1,6 +1,8 @@
 // Copyright 2014 Mike LaSpina. All rights reserved.
 // See the LICENSE file for copying permission.
 
+// Package cli extends the command-line parsing provided by the flag package
+// with support for subcommands.
 package cli
 
 import (
