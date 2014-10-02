@@ -17,7 +17,7 @@ func ExampleCommandSet_PrintUsage() {
 		},
 	}
 
-	ui := cli.NewCommandSet("example", "")
+	ui := cli.New("example", "")
 	ui.Register("version", version)
 	ui.PrintUsage("")
 }
@@ -35,7 +35,7 @@ func ExampleCommandSet_PrintUsage_command() {
 	export.Bool("-v", false, "cause export to be verbose")
 	export.String("-o", "", "output to a file")
 
-	ui := cli.NewCommandSet("my_program", "")
+	ui := cli.New("my_program", "")
 	ui.Register("export", export)
 	ui.PrintUsage("export")
 }

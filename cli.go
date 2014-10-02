@@ -35,8 +35,8 @@ type CommandSet struct {
 	Desc string // program description
 }
 
-// NewCommandSet creates a new, empty command set.
-func NewCommandSet(name, desc string) *CommandSet {
+// New creates a new, empty command set.
+func New(name, desc string) *CommandSet {
 	return &CommandSet{
 		cmds: make(map[string]*Command),
 		Name: name,
@@ -265,7 +265,7 @@ func (cmd *Command) Var(value flag.Value, name string, usage string) {
 }
 
 // Default is the default command set.
-var Default = NewCommandSet("", "")
+var Default = New("", "")
 
 // Register adds a named command and panics if cmd is nil.
 func Register(name string, cmd *Command) {
