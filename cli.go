@@ -52,9 +52,7 @@ func (cs *CommandSet) Register(name string, cmd *Command) {
 	if _, ok := cs.cmds[name]; ok {
 		fmt.Fprintf(os.Stderr, "warning: command %q already exits", name)
 	}
-	if cmd.flags.Usage == nil {
-		cmd.flags.Usage = func() { cs.PrintUsage(name) }
-	}
+	cmd.flags.Usage = func() { cs.PrintUsage(name) }
 	cs.cmds[name] = cmd
 }
 
