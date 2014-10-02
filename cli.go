@@ -103,9 +103,9 @@ func (cs *CommandSet) actions() []string {
 	return actionNames
 }
 
-// partialMatch returns an array containing the commands that start
+// suggest returns an array containing the commands that start
 // with prefix in lexicographical order.
-func (cs *CommandSet) partialMatch(prefix string) []string {
+func (cs *CommandSet) suggest(prefix string) []string {
 	var names []string
 	for name := range cs.cmds {
 		if strings.HasPrefix(name, prefix) {
@@ -118,9 +118,9 @@ func (cs *CommandSet) partialMatch(prefix string) []string {
 
 func (cs *CommandSet) unknownCommand(w io.Writer, name string) {
 	fmt.Fprintf(w, "unknown command: %s\n", name)
-	if possibles := cs.partialMatch(name); len(possibles) > 0 {
+	if suggestions := cs.suggest(name); len(suggestions) > 0 {
 		fmt.Fprintln(w, "\nDid you mean one of these?")
-		for _, s := range possibles {
+		for _, s := range suggestions {
 			fmt.Fprintf(w, "\t%s\n", s)
 		}
 	}
