@@ -80,7 +80,7 @@ func (cs *CommandSet) Run(name string, args []string) error {
 		os.Exit(2)
 	}
 
-	return cmd.Run(cmd.flags.Args())
+	return cmd.Run(cmd.Args())
 }
 
 // name returns the program name as it should appear in a usage message.
@@ -124,6 +124,27 @@ func (cs *CommandSet) unknownCommand(w io.Writer, name string) {
 			fmt.Fprintf(w, "\t%s\n", s)
 		}
 	}
+}
+
+// Args returns the non-flag arguments.
+func (cmd *Command) Args() []string {
+	return cmd.flags.Args()
+}
+
+// Arg returns the i'th argument. Arg(0) is the first remaining argument
+// after flags have been processed.
+func (cmd *Command) Arg(i int) string {
+	return cmd.flags.Arg(i)
+}
+
+// NArg is the number of arguments remaining after flags have been processed.
+func (cmd *Command) NArg() int {
+	return cmd.flags.NArg()
+}
+
+// NFlag returns the number of flags that have been set.
+func (cmd *Command) NFlag() int {
+	return cmd.flags.NFlag()
 }
 
 // Bool defines a bool flag with specified name, default value, and usage
