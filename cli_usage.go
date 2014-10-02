@@ -47,10 +47,10 @@ func (cs *CommandSet) printUsageCmd(cmd *Command) {
 	eprintf("usage: %s %s\n\n", cs.name(), cmd.Usage)
 
 	count := 0
-	cmd.Flags.VisitAll(func(*flag.Flag) { count += 1 })
+	cmd.flags.VisitAll(func(*flag.Flag) { count++ })
 	if count > 0 {
 		eprintf("Arguments:\n")
-		columnize(&cmd.Flags)
+		columnize(&cmd.flags)
 	}
 
 	if cmd.Synopsis != "" {
