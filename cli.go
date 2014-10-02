@@ -85,9 +85,9 @@ func (cs *CommandSet) Run(name string, args []string) error {
 // e.g. name [<options>] <file>...
 func (cs *CommandSet) name() string {
 	if cs.Name == "" {
-		return cs.Name
+		return path.Base(os.Args[0])
 	}
-	return path.Base(os.Args[0])
+	return cs.Name
 }
 
 // actions returns a lexicographically sorted list of runnable commands
