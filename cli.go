@@ -69,7 +69,6 @@ func (cs *CommandSet) Run(name string, args []string) error {
 		default:
 			cs.PrintUsage("")
 		}
-
 		os.Exit(2)
 	}
 

@@ -45,8 +45,14 @@ func maxLen(ary []string) int {
 // cmd.Usage(programName)
 func (cs *CommandSet) printUsageCmd(cmd *Command) {
 	eprintf("usage: %s %s\n\n", cs.name(), cmd.Usage)
-	eprintf("Arguments:\n")
-	columnize(&cmd.Flags)
+
+	count := 0
+	cmd.Flags.VisitAll(func(*flag.Flag) { count += 1 })
+	if count > 0 {
+		eprintf("Arguments:\n")
+		columnize(&cmd.Flags)
+	}
+
 	if cmd.Synopsis != "" {
 		eprintf("\n%s\n", cmd.Synopsis)
 	}
